@@ -1,0 +1,9 @@
+ms-dotnettools.csdevkit
+ms-dotnettools.csharp
+dbaeumer.vscode-eslint
+esbenp.prettier-vscode
+angular.ng-template
+ms-mssql.mssql
+ms-azuretools.vscode-docker
+eamodio.gitlens
+emmanuelbeziat.vscode-great-icons
