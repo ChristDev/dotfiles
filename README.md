@@ -63,7 +63,9 @@ Para reset total de VS Code + reinstalar:
 | 3 | Descarga pack de temas Oh My Posh |
 | 4 | Copia settings de VS Code |
 | 5 | Instala extensiones de VS Code |
-| 6 | Copia perfil de PowerShell a `~/.config/powershell/` (si pwsh existe) |
+| 6 | Detecta shell (bash/zsh) y configura Oh My Posh + aliases |
+| 7 | Copia perfil de PowerShell a `~/.config/powershell/` (si pwsh existe) |
+| 8 | Detecta WSL y avisa si falta Nerd Font en Windows Terminal |
 
 ## Respaldar cambios
 
@@ -96,6 +98,9 @@ dotfiles/
 ├── vscode/
 │   ├── settings.json                        # config VS Code
 │   └── extensions.txt                       # extensiones
+├── shell/
+│   ├── config.bash                          # Oh My Posh + aliases para bash
+│   └── config.zsh                           # Oh My Posh + aliases para zsh
 ├── powershell/
 │   └── Microsoft.PowerShell_profile.ps1     # perfil Oh My Posh + modulos
 ├── windows-terminal/

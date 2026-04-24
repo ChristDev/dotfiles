@@ -3,7 +3,8 @@
 #  dotfiles - Setup completo (Linux/Mac)
 # ========================================
 # Instala: Oh My Posh, Nerd Font (MesloLGL), temas posh,
-# VS Code settings + extensiones, perfil PowerShell (si pwsh existe).
+# VS Code settings + extensiones, shell config (bash/zsh),
+# perfil PowerShell (si pwsh existe).
 #
 # Uso: ./install.sh [--reset]
 
@@ -57,7 +58,7 @@ fi
 # -----------------------------------------------
 # 2. Oh My Posh
 # -----------------------------------------------
-echo "[1/6] Oh My Posh..."
+echo "[1/8] Oh My Posh..."
 if command -v oh-my-posh &>/dev/null; then
     echo "    Ya instalado: $(oh-my-posh version)"
 else
@@ -68,7 +69,7 @@ fi
 # -----------------------------------------------
 # 3. Nerd Font (MesloLGL)
 # -----------------------------------------------
-echo "[2/6] Nerd Font (MesloLGL)..."
+echo "[2/8] Nerd Font (MesloLGL)..."
 if fc-list 2>/dev/null | grep -qi "MesloLGL Nerd" || ls "$FONT_DIR"/MesloLGL* &>/dev/null; then
     echo "    Ya instalada."
 else
@@ -87,7 +88,7 @@ fi
 # -----------------------------------------------
 # 4. Temas Oh My Posh
 # -----------------------------------------------
-echo "[3/6] Temas Oh My Posh..."
+echo "[3/8] Temas Oh My Posh..."
 THEMES_DIR="$HOME/.poshthemes"
 if [ -f "$THEMES_DIR/kushal.omp.json" ]; then
     echo "    Ya descargados en $THEMES_DIR"
@@ -103,7 +104,7 @@ fi
 # -----------------------------------------------
 # 5. VS Code settings + extensiones
 # -----------------------------------------------
-echo "[4/6] VS Code settings..."
+echo "[4/8] VS Code settings..."
 mkdir -p "$VSCODE_USER"
 cp "$REPO_ROOT/vscode/settings.json" "$VSCODE_USER/settings.json"
 echo "    settings.json copiado."
@@ -113,7 +114,7 @@ if [ -f "$REPO_ROOT/vscode/keybindings.json" ]; then
     echo "    keybindings.json copiado."
 fi
 
-echo "[5/6] Extensiones de VS Code..."
+echo "[5/8] Extensiones de VS Code..."
 if command -v code &>/dev/null; then
     while IFS= read -r ext; do
         ext=$(echo "$ext" | xargs)
@@ -126,18 +127,78 @@ else
 fi
 
 # -----------------------------------------------
-# 6. Perfil de PowerShell (si pwsh existe)
+# 6. Shell config (bash/zsh) - auto-detect
 # -----------------------------------------------
-echo "[6/6] Perfil de PowerShell..."
+echo "[6/8] Shell config..."
+USER_SHELL="$(basename "$SHELL")"
+DOTFILES_SOURCE="# --- dotfiles config ---"
+
+case "$USER_SHELL" in
+    bash)
+        RC_FILE="$HOME/.bashrc"
+        CONFIG_FILE="$REPO_ROOT/shell/config.bash"
+        ;;
+    zsh)
+        RC_FILE="$HOME/.zshrc"
+        CONFIG_FILE="$REPO_ROOT/shell/config.zsh"
+        ;;
+    *)
+        RC_FILE=""
+        CONFIG_FILE=""
+        echo "    Shell '$USER_SHELL' no soportado, saltando."
+        ;;
+esac
+
+if [ -n "$RC_FILE" ] && [ -n "$CONFIG_FILE" ]; then
+    # Copiar config al home
+    DEST="$HOME/.dotfiles_shell_config"
+    cp "$CONFIG_FILE" "$DEST"
+    echo "    Detectado: $USER_SHELL"
+    echo "    Config copiada a $DEST"
+
+    # Agregar source al rc file si no existe
+    if [ -f "$RC_FILE" ] && grep -q "dotfiles config" "$RC_FILE" 2>/dev/null; then
+        echo "    Ya configurado en $RC_FILE"
+    else
+        echo "" >> "$RC_FILE"
+        echo "$DOTFILES_SOURCE" >> "$RC_FILE"
+        echo "source \"$DEST\"" >> "$RC_FILE"
+        echo "    Agregado source a $RC_FILE"
+    fi
+fi
+
+# -----------------------------------------------
+# 7. Perfil de PowerShell (si pwsh existe)
+# -----------------------------------------------
+echo "[7/8] Perfil de PowerShell..."
 if command -v pwsh &>/dev/null; then
     PS_PROFILE_DIR="$HOME/.config/powershell"
     mkdir -p "$PS_PROFILE_DIR"
     cp "$REPO_ROOT/powershell/Microsoft.PowerShell_profile.ps1" "$PS_PROFILE_DIR/Microsoft.PowerShell_profile.ps1"
     echo "    Copiado a $PS_PROFILE_DIR/"
-    echo "    Nota: el perfil referencia temas en \$HOME/Documents/PowerShell/posh-themes/"
-    echo "    En Linux los temas estan en ~/.poshthemes/ - ajusta el path si usas pwsh aqui."
 else
     echo "    pwsh no encontrado, saltando."
+fi
+
+# -----------------------------------------------
+# 8. Font en Windows Terminal (si es WSL)
+# -----------------------------------------------
+echo "[8/8] Windows Terminal (WSL)..."
+if grep -qi microsoft /proc/version 2>/dev/null; then
+    WT_SETTINGS="/mnt/c/Users/*/AppData/Local/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState/settings.json"
+    WT_FILE=$(ls $WT_SETTINGS 2>/dev/null | head -1)
+    if [ -n "$WT_FILE" ]; then
+        if grep -q "MesloLGL Nerd Font" "$WT_FILE" 2>/dev/null; then
+            echo "    Nerd Font ya configurada en Windows Terminal."
+        else
+            echo "    Nota: configura MesloLGL Nerd Font en Windows Terminal manualmente:"
+            echo "    Settings -> Ubuntu -> Appearance -> Font face -> MesloLGL Nerd Font"
+        fi
+    else
+        echo "    Windows Terminal no encontrado."
+    fi
+else
+    echo "    No es WSL, saltando."
 fi
 
 # -----------------------------------------------

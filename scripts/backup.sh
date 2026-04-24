@@ -34,6 +34,16 @@ if command -v code &>/dev/null; then
     echo "[+] vscode/extensions.txt"
 fi
 
+# --- Shell config ---
+SHELL_CONFIG="$HOME/.dotfiles_shell_config"
+if [ -f "$SHELL_CONFIG" ]; then
+    USER_SHELL="$(basename "$SHELL")"
+    case "$USER_SHELL" in
+        bash) cp "$SHELL_CONFIG" "$REPO_ROOT/shell/config.bash" && echo "[+] shell/config.bash" ;;
+        zsh)  cp "$SHELL_CONFIG" "$REPO_ROOT/shell/config.zsh" && echo "[+] shell/config.zsh" ;;
+    esac
+fi
+
 # --- PowerShell profile (si pwsh existe) ---
 if command -v pwsh &>/dev/null; then
     PS_PROFILE="$HOME/.config/powershell/Microsoft.PowerShell_profile.ps1"
