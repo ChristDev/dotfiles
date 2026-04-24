@@ -1,0 +1,8 @@
+# Forzar LF en scripts bash (evita \r en Linux/Mac)
+*.sh text eol=lf
+
+# PowerShell puede ser CRLF sin problemas
+*.ps1 text eol=crlf
+
+# Defaults
+* text=auto
