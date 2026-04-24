@@ -35,8 +35,10 @@ if command -v fzf &>/dev/null; then
     h() {
         local cmd=$(history | fzf --tac | sed 's/^[ ]*[0-9]*[ ]*//')
         if [[ -n "$cmd" ]]; then
-            history -s "$cmd"
-            eval "$cmd"
+            # Poner el comando en la linea de input para editar/confirmar
+            bind '"\e[0n": redraw-current-line'
+            READLINE_LINE="$cmd"
+            READLINE_POINT=${#cmd}
         fi
     }
 else
