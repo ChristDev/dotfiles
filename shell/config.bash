@@ -30,8 +30,8 @@ alias ll='ls -lAh --color=auto'
 # --- Funciones ---
 mkcd() { mkdir -p "$1" && cd "$1"; }
 
-# `h` = buscar historial interactivo con fzf
-# Ctrl+R tambien abre fzf si esta disponible
+# Buscar historial interactivo con fzf
+# Ctrl+R y tambien escribir h + Enter -> seleccionas -> queda en la linea
 if command -v fzf &>/dev/null; then
     __fzf_history() {
         local cmd=$(HISTTIMEFORMAT= history | fzf --tac --no-sort | sed 's/^[ ]*[0-9]*[ ]*//')
@@ -40,13 +40,15 @@ if command -v fzf &>/dev/null; then
     }
     bind -x '"\C-r": __fzf_history'
 
-    # h = busca y pega en el clipboard para que lo pegues con Ctrl+Shift+V
+    # h = busca en historial, muestra el comando y pregunta si ejecutar/editar
     h() {
         local cmd=$(HISTTIMEFORMAT= history | fzf --tac --no-sort | sed 's/^[ ]*[0-9]*[ ]*//')
         if [[ -n "$cmd" ]]; then
-            printf '%s' "$cmd" | clip.exe 2>/dev/null || printf '%s' "$cmd" | xclip -sel clip 2>/dev/null || printf '%s' "$cmd" | pbcopy 2>/dev/null
-            echo "Copiado al clipboard: $cmd"
-            echo "Pega con Ctrl+Shift+V para editar, o usa Ctrl+R para pegar directo en la linea."
+            read -e -p "❯ " -i "$cmd" edited
+            if [[ -n "$edited" ]]; then
+                history -s "$edited"
+                eval "$edited"
+            fi
         fi
     }
 else
