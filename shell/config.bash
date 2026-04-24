@@ -30,15 +30,22 @@ alias ll='ls -lAh --color=auto'
 # --- Funciones ---
 mkcd() { mkdir -p "$1" && cd "$1"; }
 
-# `h` = buscar historial interactivo con fzf (si existe), sino lista
+# `h` = buscar historial interactivo con fzf
+# Ctrl+R tambien abre fzf si esta disponible
 if command -v fzf &>/dev/null; then
+    __fzf_history() {
+        local cmd=$(HISTTIMEFORMAT= history | fzf --tac --no-sort | sed 's/^[ ]*[0-9]*[ ]*//')
+        READLINE_LINE="$cmd"
+        READLINE_POINT=${#cmd}
+    }
+    bind -x '"\C-r": __fzf_history'
+
     h() {
-        local cmd=$(history | fzf --tac | sed 's/^[ ]*[0-9]*[ ]*//')
+        local cmd=$(HISTTIMEFORMAT= history | fzf --tac --no-sort | sed 's/^[ ]*[0-9]*[ ]*//')
         if [[ -n "$cmd" ]]; then
-            # Poner el comando en la linea de input para editar/confirmar
-            bind '"\e[0n": redraw-current-line'
-            READLINE_LINE="$cmd"
-            READLINE_POINT=${#cmd}
+            echo "$cmd"
+            history -s "$cmd"
+            eval "$cmd"
         fi
     }
 else
