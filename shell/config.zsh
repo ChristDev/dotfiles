@@ -32,8 +32,8 @@ alias ll='ls -lAh --color=auto 2>/dev/null || ls -lAhG'
 # --- Funciones ---
 mkcd() { mkdir -p "$1" && cd "$1"; }
 
-# `h` = ver historial
-h() { history "${1:-50}"; }
+# `h` = ver historial (zsh usa -N para las ultimas N entradas)
+h() { history -${1:-50}; }
 
 # `hs <palabra>` = buscar en historial
-hs() { history | grep -i "$1"; }
+hs() { history 1 | grep -i "$1"; }
