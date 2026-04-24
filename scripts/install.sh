@@ -58,7 +58,7 @@ fi
 # -----------------------------------------------
 # 2. Oh My Posh
 # -----------------------------------------------
-echo "[1/8] Oh My Posh..."
+echo "[1/9] Oh My Posh..."
 if command -v oh-my-posh &>/dev/null; then
     echo "    Ya instalado: $(oh-my-posh version)"
 else
@@ -69,7 +69,7 @@ fi
 # -----------------------------------------------
 # 3. Nerd Font (MesloLGL)
 # -----------------------------------------------
-echo "[2/8] Nerd Font (MesloLGL)..."
+echo "[2/9] Nerd Font (MesloLGL)..."
 if fc-list 2>/dev/null | grep -qi "MesloLGL Nerd" || ls "$FONT_DIR"/MesloLGL* &>/dev/null; then
     echo "    Ya instalada."
 else
@@ -88,7 +88,7 @@ fi
 # -----------------------------------------------
 # 4. Temas Oh My Posh
 # -----------------------------------------------
-echo "[3/8] Temas Oh My Posh..."
+echo "[3/9] Temas Oh My Posh..."
 THEMES_DIR="$HOME/.poshthemes"
 if [ -f "$THEMES_DIR/kushal.omp.json" ]; then
     echo "    Ya descargados en $THEMES_DIR"
@@ -104,7 +104,7 @@ fi
 # -----------------------------------------------
 # 5. VS Code settings + extensiones
 # -----------------------------------------------
-echo "[4/8] VS Code settings..."
+echo "[4/9] VS Code settings..."
 mkdir -p "$VSCODE_USER"
 cp "$REPO_ROOT/vscode/settings.json" "$VSCODE_USER/settings.json"
 echo "    settings.json copiado."
@@ -114,7 +114,7 @@ if [ -f "$REPO_ROOT/vscode/keybindings.json" ]; then
     echo "    keybindings.json copiado."
 fi
 
-echo "[5/8] Extensiones de VS Code..."
+echo "[5/9] Extensiones de VS Code..."
 if command -v code &>/dev/null; then
     while IFS= read -r ext; do
         ext=$(echo "$ext" | xargs)
@@ -129,7 +129,31 @@ fi
 # -----------------------------------------------
 # 6. Shell config (bash/zsh) - auto-detect
 # -----------------------------------------------
-echo "[6/8] Shell config..."
+# -----------------------------------------------
+# 6. fzf (buscador interactivo de historial)
+# -----------------------------------------------
+echo "[6/9] fzf..."
+if command -v fzf &>/dev/null; then
+    echo "    Ya instalado: $(fzf --version | head -1)"
+else
+    echo "    Instalando..."
+    case "$OS" in
+        Darwin*) brew install fzf ;;
+        Linux*)
+            if command -v apt &>/dev/null; then
+                sudo apt install -y fzf 2>/dev/null || true
+            elif command -v dnf &>/dev/null; then
+                sudo dnf install -y fzf 2>/dev/null || true
+            elif command -v pacman &>/dev/null; then
+                sudo pacman -S --noconfirm fzf 2>/dev/null || true
+            else
+                echo "    No se pudo instalar fzf automaticamente. Instalalo manual."
+            fi
+            ;;
+    esac
+fi
+
+echo "[7/9] Shell config..."
 USER_SHELL="$(basename "$SHELL")"
 DOTFILES_SOURCE="# --- dotfiles config ---"
 
@@ -170,7 +194,7 @@ fi
 # -----------------------------------------------
 # 7. Perfil de PowerShell (si pwsh existe)
 # -----------------------------------------------
-echo "[7/8] Perfil de PowerShell..."
+echo "[8/9] Perfil de PowerShell..."
 if command -v pwsh &>/dev/null; then
     PS_PROFILE_DIR="$HOME/.config/powershell"
     mkdir -p "$PS_PROFILE_DIR"
@@ -183,7 +207,7 @@ fi
 # -----------------------------------------------
 # 8. Font en Windows Terminal (si es WSL)
 # -----------------------------------------------
-echo "[8/8] Windows Terminal (WSL)..."
+echo "[9/9] Windows Terminal (WSL)..."
 if grep -qi microsoft /proc/version 2>/dev/null; then
     WT_SETTINGS="/mnt/c/Users/*/AppData/Local/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState/settings.json"
     WT_FILE=$(ls $WT_SETTINGS 2>/dev/null | head -1)

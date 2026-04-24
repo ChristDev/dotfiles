@@ -30,8 +30,18 @@ alias ll='ls -lAh --color=auto'
 # --- Funciones ---
 mkcd() { mkdir -p "$1" && cd "$1"; }
 
-# `h` = ver historial
-h() { history "${1:-50}"; }
+# `h` = buscar historial interactivo con fzf (si existe), sino lista
+if command -v fzf &>/dev/null; then
+    h() {
+        local cmd=$(history | fzf --tac | sed 's/^[ ]*[0-9]*[ ]*//')
+        if [[ -n "$cmd" ]]; then
+            history -s "$cmd"
+            eval "$cmd"
+        fi
+    }
+else
+    h() { history "${1:-50}"; }
+fi
 
 # `hs <palabra>` = buscar en historial
 hs() { history | grep -i "$1"; }
