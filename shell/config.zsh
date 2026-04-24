@@ -2,6 +2,9 @@
 #  Zsh Config - dotfiles (Christopher)
 #  Sourced from ~/.zshrc por install.sh
 # =============================================
+# Nota: si ya tienes un .zshrc completo (Oh My Zsh, p10k, aliases),
+# este archivo solo agrega Oh My Posh cuando no hay otro prompt manager.
+# No sobreescribe aliases ni funciones existentes.
 
 # --- Oh My Posh (solo si no hay otro prompt manager como p10k) ---
 if ! typeset -f p10k &>/dev/null && ! [[ -v POWERLEVEL9K_INSTANT_PROMPT ]]; then
@@ -14,26 +17,3 @@ if ! typeset -f p10k &>/dev/null && ! [[ -v POWERLEVEL9K_INSTANT_PROMPT ]]; then
         fi
     fi
 fi
-
-# --- Git shortcuts ---
-alias gs='git status'
-alias ga='git add .'
-alias gp='git push'
-alias gl='git pull'
-alias glog='git log --oneline --graph --decorate --all'
-unalias gc 2>/dev/null; function gc() { git commit -m "$*"; }
-
-# --- Navegacion ---
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
-alias ll='ls -lAh --color=auto 2>/dev/null || ls -lAhG'
-
-# --- Funciones ---
-mkcd() { mkdir -p "$1" && cd "$1"; }
-
-# `h` = ver historial (zsh usa -N para las ultimas N entradas)
-h() { history -${1:-50}; }
-
-# `hs <palabra>` = buscar en historial
-hs() { history 1 | grep -i "$1"; }
