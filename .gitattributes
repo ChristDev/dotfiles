@@ -1,8 +1,10 @@
-# Forzar LF en scripts bash (evita \r en Linux/Mac)
-*.sh text eol=lf
+# Default: auto-detect, normalizar a LF en el repo
+* text=auto eol=lf
 
-# PowerShell puede ser CRLF sin problemas
+# Windows-only: CRLF
 *.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
 
-# Defaults
-* text=auto
+# Linux/Mac: siempre LF
+*.sh text eol=lf
