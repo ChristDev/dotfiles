@@ -180,12 +180,13 @@ if [ -n "$RC_FILE" ] && [ -n "$CONFIG_FILE" ]; then
     echo "    Detectado: $USER_SHELL"
     echo "    Config copiada a $DEST"
 
-    # Agregar source al rc file si no existe
+    # Agregar PATH de oh-my-posh y source al rc file si no existe
     if [ -f "$RC_FILE" ] && grep -q "dotfiles config" "$RC_FILE" 2>/dev/null; then
         echo "    Ya configurado en $RC_FILE"
     else
         echo "" >> "$RC_FILE"
         echo "$DOTFILES_SOURCE" >> "$RC_FILE"
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$RC_FILE"
         echo "source \"$DEST\"" >> "$RC_FILE"
         echo "    Agregado source a $RC_FILE"
     fi
