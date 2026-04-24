@@ -40,12 +40,13 @@ if command -v fzf &>/dev/null; then
     }
     bind -x '"\C-r": __fzf_history'
 
+    # h = busca y pega en el clipboard para que lo pegues con Ctrl+Shift+V
     h() {
         local cmd=$(HISTTIMEFORMAT= history | fzf --tac --no-sort | sed 's/^[ ]*[0-9]*[ ]*//')
         if [[ -n "$cmd" ]]; then
-            echo "$cmd"
-            history -s "$cmd"
-            eval "$cmd"
+            printf '%s' "$cmd" | clip.exe 2>/dev/null || printf '%s' "$cmd" | xclip -sel clip 2>/dev/null || printf '%s' "$cmd" | pbcopy 2>/dev/null
+            echo "Copiado al clipboard: $cmd"
+            echo "Pega con Ctrl+Shift+V para editar, o usa Ctrl+R para pegar directo en la linea."
         fi
     }
 else
